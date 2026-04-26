@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import get_settings
+from app.routers import amenities, auth, locations, pricing_rules, rooms, users
 
 
 settings = get_settings()
@@ -16,3 +17,10 @@ app = FastAPI(
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
+
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(locations.router)
+app.include_router(amenities.router)
+app.include_router(rooms.router)
+app.include_router(pricing_rules.router)
