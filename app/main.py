@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import get_settings
-from app.routers import amenities, auth, locations, pricing_rules, rooms, users
+from app.routers import amenities, auth, bookings, locations, pricing_rules, recommendations, rooms, users
 
 
 settings = get_settings()
@@ -24,3 +24,5 @@ app.include_router(locations.router)
 app.include_router(amenities.router)
 app.include_router(rooms.router)
 app.include_router(pricing_rules.router)
+app.include_router(bookings.router)
+app.include_router(recommendations.router)
