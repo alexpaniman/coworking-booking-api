@@ -82,4 +82,3 @@ def calculate_dynamic_price(db: Session, room: Room, start_at: datetime, end_at:
         * get_occupancy_multiplier(db, room, start_at)
     )
     return to_money(price)
-

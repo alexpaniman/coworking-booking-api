@@ -77,7 +77,10 @@ def create_booking(
     start_at = normalize_datetime(payload.start_at)
     end_at = normalize_datetime(payload.end_at)
     if start_at >= end_at:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="end_at must be later than start_at")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="end_at must be later than start_at",
+        )
     if start_at <= datetime.utcnow():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot book a past slot")
 
@@ -87,7 +90,10 @@ def create_booking(
     if payload.people_count > room.capacity:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Room capacity is too small")
     if has_booking_conflict(db, room.id, start_at, end_at):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Room is already booked for this time")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Room is already booked for this time",
+        )
 
     booking = Booking(
         user_id=current_user.id,
@@ -133,4 +139,3 @@ def delete_booking(
 ) -> Response:
     cancel_booking(booking_id, db, current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-

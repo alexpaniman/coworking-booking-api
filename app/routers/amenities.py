@@ -62,4 +62,3 @@ def delete_amenity(
     db.delete(amenity)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-

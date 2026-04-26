@@ -49,4 +49,3 @@ def build_booking_message(booking: Booking, action: str) -> str:
 
 def notify_booking(booking: Booking, action: str) -> bool:
     return TelegramNotifier().send_message(build_booking_message(booking, action))
-

@@ -71,4 +71,3 @@ def delete_pricing_rule(
     db.delete(rule)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-

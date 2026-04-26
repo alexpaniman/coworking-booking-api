@@ -22,4 +22,3 @@ def has_booking_conflict(
     if exclude_booking_id is not None:
         statement = statement.where(Booking.id != exclude_booking_id)
     return db.scalar(statement) is not None
-

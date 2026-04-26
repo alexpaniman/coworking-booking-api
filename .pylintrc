@@ -1,0 +1,18 @@
+[MAIN]
+ignore=migrations,tests
+
+[FORMAT]
+max-line-length=110
+
+[MESSAGES CONTROL]
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods,
+    duplicate-code,
+    too-many-arguments,
+    too-many-locals,
+    too-many-branches,
+    not-callable,
+    fixme

@@ -89,4 +89,3 @@ def delete_room(
     room.is_active = False
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-

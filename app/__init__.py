@@ -1,2 +1,1 @@
 """Coworking booking API package."""
-

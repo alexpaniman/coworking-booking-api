@@ -91,4 +91,3 @@ def build_recommendations(db: Session, payload: RecommendationRequest) -> list[R
 
     options.sort(key=lambda option: (-option.score, option.price, option.start_at))
     return options[:MAX_OPTIONS]
-

@@ -45,4 +45,3 @@ def login_user(
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is inactive")
     return Token(access_token=create_access_token(str(user.id)))
-

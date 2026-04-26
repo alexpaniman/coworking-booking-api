@@ -30,4 +30,3 @@ def decode_access_token(token: str) -> dict[str, str]:
         return jwt.decode(token, settings.secret_key, algorithms=[settings.token_algorithm])
     except JWTError as exc:
         raise ValueError("Invalid access token") from exc
-
