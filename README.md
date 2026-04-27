@@ -51,11 +51,13 @@ docker compose exec api python -m app.seed
 - `GET /users/me` — защищенный endpoint текущего пользователя.
 - `POST /locations`, `POST /rooms`, `POST /amenities`, `POST /pricing-rules` — admin CRUD.
 - `POST /bookings` — создание бронирования.
+- `PATCH /bookings/{booking_id}/reschedule` — перенос бронирования с повторной проверкой правил.
 - `POST /bookings/{booking_id}/cancel` — отмена бронирования.
 - `POST /recommendations/booking-options` — подбор свободных вариантов бронирования.
 
 Локации имеют рабочие часы `opens_at` и `closes_at`; сервис не дает забронировать комнату вне этого окна.
 Комнаты имеют `buffer_minutes` — технический перерыв между бронированиями.
+Минимальная длительность брони — 30 минут, максимальная — 8 часов.
 
 ## Алгоритм рекомендаций
 

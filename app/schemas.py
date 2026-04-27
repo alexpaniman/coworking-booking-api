@@ -184,6 +184,12 @@ class BookingCreate(BaseModel):
     people_count: int = Field(gt=0)
 
 
+class BookingReschedule(BaseModel):
+    start_at: datetime
+    end_at: datetime
+    people_count: int | None = Field(default=None, gt=0)
+
+
 class BookingRead(BaseModel):
     id: int
     user_id: int

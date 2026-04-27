@@ -81,6 +81,30 @@ def test_booking_validates_capacity_and_time(client, admin_headers, user_headers
     )
     assert time_response.status_code == 400
 
+    short_response = client.post(
+        "/bookings",
+        headers=user_headers,
+        json={
+            "room_id": room["id"],
+            "start_at": start_at.isoformat(),
+            "end_at": (start_at + timedelta(minutes=15)).isoformat(),
+            "people_count": 2,
+        },
+    )
+    assert short_response.status_code == 400
+
+    long_response = client.post(
+        "/bookings",
+        headers=user_headers,
+        json={
+            "room_id": room["id"],
+            "start_at": start_at.isoformat(),
+            "end_at": (start_at + timedelta(hours=9)).isoformat(),
+            "people_count": 2,
+        },
+    )
+    assert long_response.status_code == 400
+
 
 def test_booking_rejects_slots_outside_location_working_hours(client, admin_headers, user_headers):
     location = create_location(client, admin_headers, opens_at="09:00:00", closes_at="18:00:00")
@@ -131,3 +155,56 @@ def test_booking_respects_room_buffer_between_slots(client, admin_headers, user_
     )
 
     assert adjacent_response.status_code == 409
+
+
+def test_booking_can_be_rescheduled_with_same_conflict_rules(client, admin_headers, user_headers):
+    location = create_location(client, admin_headers)
+    room = create_room(client, admin_headers, location["id"])
+    start_at = future_datetime(hour=10)
+
+    first_response = client.post(
+        "/bookings",
+        headers=user_headers,
+        json={
+            "room_id": room["id"],
+            "start_at": start_at.isoformat(),
+            "end_at": (start_at + timedelta(hours=1)).isoformat(),
+            "people_count": 2,
+        },
+    )
+    assert first_response.status_code == 201, first_response.text
+
+    second_response = client.post(
+        "/bookings",
+        headers=user_headers,
+        json={
+            "room_id": room["id"],
+            "start_at": (start_at + timedelta(hours=2)).isoformat(),
+            "end_at": (start_at + timedelta(hours=3)).isoformat(),
+            "people_count": 2,
+        },
+    )
+    assert second_response.status_code == 201, second_response.text
+    second_booking = second_response.json()
+
+    conflict_response = client.patch(
+        f"/bookings/{second_booking['id']}/reschedule",
+        headers=user_headers,
+        json={
+            "start_at": (start_at + timedelta(minutes=30)).isoformat(),
+            "end_at": (start_at + timedelta(hours=1, minutes=30)).isoformat(),
+        },
+    )
+    assert conflict_response.status_code == 409
+
+    valid_response = client.patch(
+        f"/bookings/{second_booking['id']}/reschedule",
+        headers=user_headers,
+        json={
+            "start_at": (start_at + timedelta(hours=4)).isoformat(),
+            "end_at": (start_at + timedelta(hours=5)).isoformat(),
+            "people_count": 3,
+        },
+    )
+    assert valid_response.status_code == 200, valid_response.text
+    assert valid_response.json()["people_count"] == 3

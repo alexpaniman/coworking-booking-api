@@ -6,6 +6,19 @@ from sqlalchemy.orm import Session
 from app.models import BOOKING_STATUS_CONFIRMED, Booking, Room
 
 
+MIN_BOOKING_MINUTES = 30
+MAX_BOOKING_MINUTES = 8 * 60
+
+
+def get_duration_minutes(start_at: datetime, end_at: datetime) -> int:
+    return int((end_at - start_at).total_seconds() // 60)
+
+
+def is_valid_booking_duration(start_at: datetime, end_at: datetime) -> bool:
+    duration_minutes = get_duration_minutes(start_at, end_at)
+    return MIN_BOOKING_MINUTES <= duration_minutes <= MAX_BOOKING_MINUTES
+
+
 def has_booking_conflict(
     db: Session,
     room_id: int,
