@@ -93,6 +93,7 @@ class RoomCreate(BaseModel):
     room_type: RoomType = ROOM_TYPE_WORKSPACE
     capacity: int = Field(gt=0)
     base_price_per_hour: Decimal = Field(gt=0, decimal_places=2)
+    buffer_minutes: int = Field(default=0, ge=0, le=120)
     description: str | None = None
     is_active: bool = True
     amenity_ids: list[int] = Field(default_factory=list)
@@ -104,6 +105,7 @@ class RoomUpdate(BaseModel):
     room_type: RoomType | None = None
     capacity: int | None = Field(default=None, gt=0)
     base_price_per_hour: Decimal | None = Field(default=None, gt=0, decimal_places=2)
+    buffer_minutes: int | None = Field(default=None, ge=0, le=120)
     description: str | None = None
     is_active: bool | None = None
     amenity_ids: list[int] | None = None
@@ -116,6 +118,7 @@ class RoomRead(BaseModel):
     room_type: RoomType
     capacity: int
     base_price_per_hour: Decimal
+    buffer_minutes: int
     description: str | None
     is_active: bool
     amenities: list[AmenityRead] = Field(default_factory=list)

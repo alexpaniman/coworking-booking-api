@@ -55,6 +55,7 @@ docker compose exec api python -m app.seed
 - `POST /recommendations/booking-options` — подбор свободных вариантов бронирования.
 
 Локации имеют рабочие часы `opens_at` и `closes_at`; сервис не дает забронировать комнату вне этого окна.
+Комнаты имеют `buffer_minutes` — технический перерыв между бронированиями.
 
 ## Алгоритм рекомендаций
 

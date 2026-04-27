@@ -94,7 +94,7 @@ def create_booking(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Booking is outside location working hours",
         )
-    if has_booking_conflict(db, room.id, start_at, end_at):
+    if has_booking_conflict(db, room.id, start_at, end_at, buffer_minutes=room.buffer_minutes):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Room is already booked for this time",

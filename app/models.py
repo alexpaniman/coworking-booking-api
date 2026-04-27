@@ -89,6 +89,7 @@ class Room(Base):
     room_type: Mapped[str] = mapped_column(String(32), nullable=False)
     capacity: Mapped[int] = mapped_column(Integer, nullable=False)
     base_price_per_hour: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    buffer_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 

@@ -124,3 +124,38 @@ def test_recommendations_respect_location_working_hours(client, admin_headers, u
     assert response.status_code == 200, response.text
     start_times = {option["start_at"][-8:] for option in response.json()["options"]}
     assert start_times == {"10:00:00", "10:30:00", "11:00:00"}
+
+
+def test_recommendations_respect_room_buffer(client, admin_headers, user_headers):
+    location = create_location(client, admin_headers)
+    room = create_room(client, admin_headers, location["id"], price=Decimal("100.00"), buffer_minutes=30)
+    start_at = future_datetime(hour=10)
+    booking_response = client.post(
+        "/bookings",
+        headers=user_headers,
+        json={
+            "room_id": room["id"],
+            "start_at": start_at.isoformat(),
+            "end_at": (start_at + timedelta(hours=1)).isoformat(),
+            "people_count": 2,
+        },
+    )
+    assert booking_response.status_code == 201, booking_response.text
+
+    response = client.post(
+        "/recommendations/booking-options",
+        headers=user_headers,
+        json={
+            "date": start_at.date().isoformat(),
+            "earliest_start": "09:00:00",
+            "latest_end": "12:00:00",
+            "duration_minutes": 60,
+            "people_count": 2,
+            "location_id": location["id"],
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    start_times = {option["start_at"][-8:] for option in response.json()["options"]}
+    assert "09:00:00" not in start_times
+    assert "11:00:00" not in start_times

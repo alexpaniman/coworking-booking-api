@@ -112,6 +112,7 @@ def create_room(
     room_type: str = "workspace",
     name: str = "Open Space A",
     price: Decimal = Decimal("500.00"),
+    buffer_minutes: int = 0,
 ) -> dict:
     response = client.post(
         "/rooms",
@@ -122,6 +123,7 @@ def create_room(
             "room_type": room_type,
             "capacity": 6,
             "base_price_per_hour": str(price),
+            "buffer_minutes": buffer_minutes,
             "description": "Comfortable coworking room",
             "amenity_ids": amenity_ids or [],
         },
