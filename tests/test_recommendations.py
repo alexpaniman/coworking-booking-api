@@ -102,3 +102,25 @@ def test_recommendations_respect_budget(client, admin_headers, user_headers):
     assert response.json()["options"] == []
     assert room["id"]
 
+
+def test_recommendations_respect_location_working_hours(client, admin_headers, user_headers):
+    location = create_location(client, admin_headers, opens_at="10:00:00", closes_at="12:00:00")
+    create_room(client, admin_headers, location["id"], price=Decimal("100.00"))
+    start_at = future_datetime(hour=9)
+
+    response = client.post(
+        "/recommendations/booking-options",
+        headers=user_headers,
+        json={
+            "date": start_at.date().isoformat(),
+            "earliest_start": "09:00:00",
+            "latest_end": "13:00:00",
+            "duration_minutes": 60,
+            "people_count": 2,
+            "location_id": location["id"],
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    start_times = {option["start_at"][-8:] for option in response.json()["options"]}
+    assert start_times == {"10:00:00", "10:30:00", "11:00:00"}

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 
 from sqlalchemy import (
     Boolean,
@@ -57,6 +57,8 @@ class Location(Base):
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     address: Mapped[str] = mapped_column(String(255), nullable=False)
     timezone: Mapped[str] = mapped_column(String(64), default="Europe/Moscow", nullable=False)
+    opens_at = mapped_column(Time, default=time(hour=8), nullable=False)
+    closes_at = mapped_column(Time, default=time(hour=22), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     rooms: Mapped[list["Room"]] = relationship("Room", back_populates="location")

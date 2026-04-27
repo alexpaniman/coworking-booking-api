@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.models import ROOM_TYPE_MEETING, ROOM_TYPE_WORKSPACE, Amenity, Room
 from app.schemas import RecommendationOption, RecommendationRequest
-from app.services.bookings import has_booking_conflict
+from app.services.bookings import has_booking_conflict, is_within_working_hours
 from app.services.pricing import calculate_dynamic_price
 
 
@@ -72,7 +72,9 @@ def build_recommendations(db: Session, payload: RecommendationRequest) -> list[R
         slot_start = window_start
         while slot_start + duration <= window_end:
             slot_end = slot_start + duration
-            if not has_booking_conflict(db, room.id, slot_start, slot_end):
+            if is_within_working_hours(room, slot_start, slot_end) and not has_booking_conflict(
+                db, room.id, slot_start, slot_end
+            ):
                 price = calculate_dynamic_price(db, room, slot_start, slot_end)
                 if payload.max_price is None or price <= payload.max_price:
                     options.append(

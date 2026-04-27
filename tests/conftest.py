@@ -74,11 +74,21 @@ def future_datetime(days: int = 3, hour: int = 10) -> datetime:
     )
 
 
-def create_location(client: TestClient, headers: dict[str, str]) -> dict:
+def create_location(
+    client: TestClient,
+    headers: dict[str, str],
+    opens_at: str = "08:00:00",
+    closes_at: str = "22:00:00",
+) -> dict:
     response = client.post(
         "/locations",
         headers=headers,
-        json={"name": "Center Hub", "address": "Main street 1"},
+        json={
+            "name": "Center Hub",
+            "address": "Main street 1",
+            "opens_at": opens_at,
+            "closes_at": closes_at,
+        },
     )
     assert response.status_code == 201, response.text
     return response.json()
@@ -118,4 +128,3 @@ def create_room(
     )
     assert response.status_code == 201, response.text
     return response.json()
-

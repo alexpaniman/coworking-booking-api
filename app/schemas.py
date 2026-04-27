@@ -37,13 +37,23 @@ class LocationCreate(BaseModel):
     name: str = Field(min_length=2, max_length=150)
     address: str = Field(min_length=5, max_length=255)
     timezone: str = Field(default="Europe/Moscow", max_length=64)
+    opens_at: time = time(hour=8)
+    closes_at: time = time(hour=22)
     is_active: bool = True
+
+    @model_validator(mode="after")
+    def validate_working_hours(self) -> "LocationCreate":
+        if self.opens_at >= self.closes_at:
+            raise ValueError("closes_at must be later than opens_at")
+        return self
 
 
 class LocationUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=2, max_length=150)
     address: str | None = Field(default=None, min_length=5, max_length=255)
     timezone: str | None = Field(default=None, max_length=64)
+    opens_at: time | None = None
+    closes_at: time | None = None
     is_active: bool | None = None
 
 
@@ -52,6 +62,8 @@ class LocationRead(BaseModel):
     name: str
     address: str
     timezone: str
+    opens_at: time
+    closes_at: time
     is_active: bool
 
     model_config = ConfigDict(from_attributes=True)

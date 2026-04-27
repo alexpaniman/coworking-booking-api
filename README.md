@@ -54,6 +54,8 @@ docker compose exec api python -m app.seed
 - `POST /bookings/{booking_id}/cancel` — отмена бронирования.
 - `POST /recommendations/booking-options` — подбор свободных вариантов бронирования.
 
+Локации имеют рабочие часы `opens_at` и `closes_at`; сервис не дает забронировать комнату вне этого окна.
+
 ## Алгоритм рекомендаций
 
 Endpoint `/recommendations/booking-options` принимает дату, временное окно, длительность, количество людей, бюджет, нужные удобства и признак необходимости переговорки.

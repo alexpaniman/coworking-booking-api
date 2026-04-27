@@ -15,7 +15,7 @@ from app.models import (
     User,
 )
 from app.schemas import BookingCreate, BookingRead
-from app.services.bookings import has_booking_conflict
+from app.services.bookings import has_booking_conflict, is_within_working_hours
 from app.services.pricing import calculate_dynamic_price
 from app.services.telegram import notify_booking
 
@@ -89,6 +89,11 @@ def create_booking(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
     if payload.people_count > room.capacity:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Room capacity is too small")
+    if not is_within_working_hours(room, start_at, end_at):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Booking is outside location working hours",
+        )
     if has_booking_conflict(db, room.id, start_at, end_at):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

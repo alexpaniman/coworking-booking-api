@@ -45,7 +45,15 @@ def update_location(
     _: User = Depends(require_admin),
 ) -> Location:
     location = get_location(location_id, db)
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    data = payload.model_dump(exclude_unset=True)
+    opens_at = data.get("opens_at", location.opens_at)
+    closes_at = data.get("closes_at", location.closes_at)
+    if opens_at >= closes_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="closes_at must be later than opens_at",
+        )
+    for field, value in data.items():
         setattr(location, field, value)
     db.commit()
     db.refresh(location)
