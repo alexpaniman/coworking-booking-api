@@ -22,7 +22,7 @@ from app.services.bookings import (
     is_valid_booking_duration,
     is_within_working_hours,
 )
-from app.services.pricing import calculate_dynamic_price
+from app.services.pricing import calculate_price_breakdown, serialize_price_breakdown
 from app.services.telegram import notify_booking
 
 
@@ -129,13 +129,15 @@ def create_booking(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
     validate_booking_slot(db, room, start_at, end_at, payload.people_count)
 
+    price_breakdown = calculate_price_breakdown(db, room, start_at, end_at)
     booking = Booking(
         user_id=current_user.id,
         room_id=room.id,
         start_at=start_at,
         end_at=end_at,
         people_count=payload.people_count,
-        total_price=calculate_dynamic_price(db, room, start_at, end_at),
+        total_price=price_breakdown["final_price"],
+        price_breakdown=serialize_price_breakdown(price_breakdown),
         status=BOOKING_STATUS_CONFIRMED,
     )
     db.add(booking)
@@ -174,7 +176,9 @@ def reschedule_booking(
     booking.start_at = start_at
     booking.end_at = end_at
     booking.people_count = people_count
-    booking.total_price = calculate_dynamic_price(db, room, start_at, end_at)
+    price_breakdown = calculate_price_breakdown(db, room, start_at, end_at)
+    booking.total_price = price_breakdown["final_price"]
+    booking.price_breakdown = serialize_price_breakdown(price_breakdown)
     db.commit()
     db.refresh(booking)
     booking = get_booking_or_404(db, booking.id)

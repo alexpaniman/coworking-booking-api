@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    JSON,
     Numeric,
     String,
     Table,
@@ -129,6 +130,7 @@ class Booking(Base):
     end_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
     people_count: Mapped[int] = mapped_column(Integer, nullable=False)
     total_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    price_breakdown: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     status: Mapped[str] = mapped_column(
         String(32),
         default=BOOKING_STATUS_CONFIRMED,

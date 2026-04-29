@@ -77,6 +77,7 @@ def test_recommendations_skip_busy_slots_and_apply_dynamic_price(client, admin_h
     ]
     assert workspace_prices
     assert max(workspace_prices) > Decimal("200.00")
+    assert all(option["price_breakdown"]["final_price"] == option["price"] for option in options)
 
 
 def test_recommendations_respect_budget(client, admin_headers, user_headers):

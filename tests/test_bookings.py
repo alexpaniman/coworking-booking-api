@@ -22,6 +22,7 @@ def test_booking_creation_conflict_and_cancel(client, admin_headers, user_header
     assert response.status_code == 201, response.text
     booking = response.json()
     assert booking["status"] == "confirmed"
+    assert booking["price_breakdown"]["final_price"] == booking["total_price"]
 
     conflict_response = client.post(
         "/bookings",
@@ -208,3 +209,4 @@ def test_booking_can_be_rescheduled_with_same_conflict_rules(client, admin_heade
     )
     assert valid_response.status_code == 200, valid_response.text
     assert valid_response.json()["people_count"] == 3
+    assert valid_response.json()["price_breakdown"]["final_price"] == valid_response.json()["total_price"]

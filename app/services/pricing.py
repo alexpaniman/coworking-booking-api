@@ -74,11 +74,30 @@ def get_pricing_rule_multiplier(db: Session, room: Room, start_at: datetime, end
 
 
 def calculate_dynamic_price(db: Session, room: Room, start_at: datetime, end_at: datetime) -> Decimal:
-    base_price = decimal_from(room.base_price_per_hour) * duration_hours(start_at, end_at)
-    price = (
-        base_price
-        * room_type_multiplier(room)
-        * get_pricing_rule_multiplier(db, room, start_at, end_at)
-        * get_occupancy_multiplier(db, room, start_at)
-    )
-    return to_money(price)
+    return calculate_price_breakdown(db, room, start_at, end_at)["final_price"]
+
+
+def calculate_price_breakdown(
+    db: Session,
+    room: Room,
+    start_at: datetime,
+    end_at: datetime,
+) -> dict[str, Decimal]:
+    hours = duration_hours(start_at, end_at)
+    base_price = decimal_from(room.base_price_per_hour) * hours
+    type_multiplier = room_type_multiplier(room)
+    rule_multiplier = get_pricing_rule_multiplier(db, room, start_at, end_at)
+    occupancy_multiplier = get_occupancy_multiplier(db, room, start_at)
+    final_price = base_price * type_multiplier * rule_multiplier * occupancy_multiplier
+    return {
+        "base_price": to_money(base_price),
+        "duration_hours": hours.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+        "room_type_multiplier": type_multiplier,
+        "pricing_rule_multiplier": rule_multiplier,
+        "occupancy_multiplier": occupancy_multiplier.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+        "final_price": to_money(final_price),
+    }
+
+
+def serialize_price_breakdown(breakdown: dict[str, Decimal]) -> dict[str, str]:
+    return {key: str(value) for key, value in breakdown.items()}

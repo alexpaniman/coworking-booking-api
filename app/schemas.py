@@ -190,6 +190,15 @@ class BookingReschedule(BaseModel):
     people_count: int | None = Field(default=None, gt=0)
 
 
+class PriceBreakdown(BaseModel):
+    base_price: Decimal
+    duration_hours: Decimal
+    room_type_multiplier: Decimal
+    pricing_rule_multiplier: Decimal
+    occupancy_multiplier: Decimal
+    final_price: Decimal
+
+
 class BookingRead(BaseModel):
     id: int
     user_id: int
@@ -198,6 +207,7 @@ class BookingRead(BaseModel):
     end_at: datetime
     people_count: int
     total_price: Decimal
+    price_breakdown: PriceBreakdown | None
     status: str
     created_at: datetime
     cancelled_at: datetime | None
@@ -231,6 +241,7 @@ class RecommendationOption(BaseModel):
     start_at: datetime
     end_at: datetime
     price: Decimal
+    price_breakdown: PriceBreakdown
     score: float
 
 
