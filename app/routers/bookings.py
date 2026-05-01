@@ -70,7 +70,10 @@ def validate_booking_slot(
     if not is_valid_booking_duration(start_at, end_at):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Booking duration must be between {MIN_BOOKING_MINUTES} and {MAX_BOOKING_MINUTES} minutes",
+            detail=(
+                f"Booking duration must be between {MIN_BOOKING_MINUTES} "
+                f"and {MAX_BOOKING_MINUTES} minutes"
+            ),
         )
     if people_count > room.capacity:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Room capacity is too small")
@@ -158,7 +161,10 @@ def reschedule_booking(
     booking = get_booking_or_404(db, booking_id)
     ensure_booking_access(booking, current_user)
     if booking.status == BOOKING_STATUS_CANCELLED:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot reschedule cancelled booking")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot reschedule cancelled booking",
+        )
 
     start_at = normalize_datetime(payload.start_at)
     end_at = normalize_datetime(payload.end_at)

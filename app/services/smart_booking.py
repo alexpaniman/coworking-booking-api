@@ -28,7 +28,7 @@ def decode_part(value: str) -> bytes:
 
 def sign_payload(payload: bytes) -> str:
     settings = get_settings()
-    signature = hmac.new(settings.secret_key.encode("utf-8"), payload, hashlib.sha256).digest()
+    signature = hmac.new(str(settings.secret_key).encode("utf-8"), payload, hashlib.sha256).digest()
     return encode_part(signature)
 
 

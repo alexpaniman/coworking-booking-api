@@ -60,7 +60,10 @@ def calculate_score(room: Room, price: Decimal, start_at: datetime, payload: Rec
     return round(score, 2)
 
 
-def generate_recommendation_options(db: Session, payload: RecommendationRequest) -> list[RecommendationOption]:
+def generate_recommendation_options(
+    db: Session,
+    payload: RecommendationRequest,
+) -> list[RecommendationOption]:
     validate_requested_amenities(db, payload.amenity_ids)
     window_start = datetime.combine(payload.date, payload.earliest_start)
     window_end = datetime.combine(payload.date, payload.latest_end)
