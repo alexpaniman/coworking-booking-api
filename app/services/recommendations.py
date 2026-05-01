@@ -60,7 +60,7 @@ def calculate_score(room: Room, price: Decimal, start_at: datetime, payload: Rec
     return round(score, 2)
 
 
-def build_recommendations(db: Session, payload: RecommendationRequest) -> list[RecommendationOption]:
+def generate_recommendation_options(db: Session, payload: RecommendationRequest) -> list[RecommendationOption]:
     validate_requested_amenities(db, payload.amenity_ids)
     window_start = datetime.combine(payload.date, payload.earliest_start)
     window_end = datetime.combine(payload.date, payload.latest_end)
@@ -98,4 +98,9 @@ def build_recommendations(db: Session, payload: RecommendationRequest) -> list[R
             slot_start += step
 
     options.sort(key=lambda option: (-option.score, option.price, option.start_at))
+    return options
+
+
+def build_recommendations(db: Session, payload: RecommendationRequest) -> list[RecommendationOption]:
+    options = generate_recommendation_options(db, payload)
     return options[:MAX_OPTIONS]

@@ -249,5 +249,28 @@ class RecommendationResponse(BaseModel):
     options: list[RecommendationOption]
 
 
+class SmartBookingRequest(RecommendationRequest):
+    pass
+
+
+class SmartBookingRoomOption(RecommendationOption):
+    option_token: str
+
+
+class SmartBookingPeriod(BaseModel):
+    start_at: datetime
+    end_at: datetime
+    cheapest_price: Decimal
+    options: list[SmartBookingRoomOption]
+
+
+class SmartBookingResponse(BaseModel):
+    periods: list[SmartBookingPeriod]
+
+
+class SmartBookingConfirm(BaseModel):
+    option_token: str
+
+
 VALID_USER_ROLES = {USER_ROLE_ADMIN, USER_ROLE_USER}
 VALID_ROOM_TYPES = {ROOM_TYPE_WORKSPACE, ROOM_TYPE_MEETING}
