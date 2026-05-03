@@ -6,8 +6,12 @@ from app.database import get_db
 from app.models import BOOKING_STATUS_CONFIRMED, Booking, Room, User
 from app.routers.bookings import get_booking_or_404, validate_booking_slot
 from app.schemas import BookingRead, SmartBookingConfirm, SmartBookingRequest, SmartBookingResponse
-from app.services.pricing import calculate_price_breakdown, serialize_price_breakdown
-from app.services.smart_booking import build_smart_booking_periods, decode_option_token
+from app.services.pricing import serialize_price_breakdown
+from app.services.smart_booking import (
+    build_smart_booking_periods,
+    decode_option_token,
+    ensure_quote_is_active,
+)
 from app.services.telegram import notify_booking
 
 
@@ -37,6 +41,10 @@ def book_smart_option(
         option = decode_option_token(payload.option_token)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    try:
+        ensure_quote_is_active(option)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
     room = db.get(Room, option["room_id"])
     if room is None or not room.is_active:
@@ -49,15 +57,14 @@ def book_smart_option(
         option["end_at"],
         option["people_count"],
     )
-    price_breakdown = calculate_price_breakdown(db, room, option["start_at"], option["end_at"])
     booking = Booking(
         user_id=current_user.id,
         room_id=room.id,
         start_at=option["start_at"],
         end_at=option["end_at"],
         people_count=option["people_count"],
-        total_price=price_breakdown["final_price"],
-        price_breakdown=serialize_price_breakdown(price_breakdown),
+        total_price=option["quoted_price"],
+        price_breakdown=serialize_price_breakdown(option["price_breakdown"]),
         status=BOOKING_STATUS_CONFIRMED,
     )
     db.add(booking)

@@ -255,6 +255,7 @@ class SmartBookingRequest(RecommendationRequest):
 
 class SmartBookingRoomOption(RecommendationOption):
     option_token: str
+    quote_expires_at: datetime
 
 
 class SmartBookingPeriod(BaseModel):
