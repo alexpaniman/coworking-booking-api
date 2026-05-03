@@ -125,6 +125,48 @@ docker compose exec api python -m app.seed
 - `user@example.com` / `secret123`
 - локация, две комнаты, удобства и правило пиковой цены.
 
+## Интерактивное демо
+
+Для записи видео есть сценарный demo-runner. Он по шагам показывает описание действия, HTTP-команду, ждет Enter, выполняет запрос и печатает JSON-ответ.
+
+Сначала запустите сервис:
+
+```bash
+docker compose up --build
+```
+
+Затем в другом терминале:
+
+```bash
+docker compose exec api python -u scripts/demo_runner.py
+```
+
+Для быстрой проверки без пауз:
+
+```bash
+docker compose exec -T api python -u scripts/demo_runner.py --auto
+```
+
+Скрипт также можно запустить с хоста, если API доступен по HTTP:
+
+```bash
+python -u scripts/demo_runner.py --base-url http://localhost:8000
+```
+
+Сценарий показывает:
+
+- health check;
+- регистрацию и login;
+- JWT на `/users/me`;
+- admin CRUD;
+- обычную бронь;
+- запрет конфликтующей брони;
+- перенос брони;
+- рекомендации;
+- smart booking с `option_token` и фиксацией цены;
+- повторную проверку доступности;
+- отмену брони.
+
 ## Основные endpoint'ы
 
 - `POST /auth/register` — регистрация пользователя.
