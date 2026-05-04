@@ -103,6 +103,25 @@ http://localhost:8000/docs
 docker compose run --rm api pytest
 ```
 
+Покрытие:
+
+```bash
+docker compose run --rm api pytest --cov=app --cov-report=term-missing
+```
+
+Если контейнер `api` уже запущен:
+
+```bash
+docker compose exec -T api pytest --cov=app --cov-report=term-missing
+```
+
+После изменения `requirements.txt` пересоберите образ:
+
+```bash
+docker compose build api
+docker compose up -d --no-deps --force-recreate api
+```
+
 ## Pylint
 
 ```bash

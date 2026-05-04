@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
+from app.core.time import utc_now
 from app.schemas import PriceBreakdown, RecommendationOption
 from app.services.smart_booking import create_option_token
 from tests.conftest import create_location, create_room, future_datetime
@@ -149,7 +150,7 @@ def test_smart_booking_uses_quoted_price_even_if_rules_change(client, admin_head
 
 def test_smart_booking_rejects_expired_quote(client, user_headers):
     start_at = future_datetime(hour=17)
-    expired_at = datetime.utcnow() - timedelta(minutes=1)
+    expired_at = utc_now() - timedelta(minutes=1)
     option = RecommendationOption(
         room_id=1,
         room_name="Expired Room",

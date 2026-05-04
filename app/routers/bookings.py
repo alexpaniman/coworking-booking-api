@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.deps import get_current_user
+from app.core.time import utc_now
 from app.database import get_db
 from app.models import (
     BOOKING_STATUS_CANCELLED,
@@ -65,7 +66,7 @@ def validate_booking_slot(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="end_at must be later than start_at",
         )
-    if start_at <= datetime.utcnow():
+    if start_at <= utc_now():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot book a past slot")
     if not is_valid_booking_duration(start_at, end_at):
         raise HTTPException(
@@ -203,7 +204,7 @@ def cancel_booking(
     if booking.status == BOOKING_STATUS_CANCELLED:
         return booking
     booking.status = BOOKING_STATUS_CANCELLED
-    booking.cancelled_at = datetime.utcnow()
+    booking.cancelled_at = utc_now()
     db.commit()
     db.refresh(booking)
     booking = get_booking_or_404(db, booking.id)

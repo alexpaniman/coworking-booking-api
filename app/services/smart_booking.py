@@ -8,6 +8,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.core.time import utc_now
 from app.schemas import (
     RecommendationOption,
     SmartBookingPeriod,
@@ -81,7 +82,7 @@ def decode_option_token(token: str) -> dict:
 
 
 def ensure_quote_is_active(option: dict) -> None:
-    if datetime.utcnow() > option["expires_at"]:
+    if utc_now() > option["expires_at"]:
         raise ValueError("Smart booking quote expired")
 
 
@@ -101,7 +102,7 @@ def group_options_by_period(
     options: list[RecommendationOption],
     people_count: int,
 ) -> list[SmartBookingPeriod]:
-    expires_at = datetime.utcnow() + timedelta(minutes=QUOTE_TTL_MINUTES)
+    expires_at = utc_now() + timedelta(minutes=QUOTE_TTL_MINUTES)
     periods: dict[tuple[datetime, datetime], list[SmartBookingRoomOption]] = {}
     for option in options:
         key = (option.start_at, option.end_at)

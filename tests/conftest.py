@@ -14,6 +14,7 @@ os.environ["TELEGRAM_ENABLED"] = "false"
 
 from app.database import Base, engine  # noqa: E402
 from app.main import app  # noqa: E402
+from app.core.time import utc_now  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -66,7 +67,7 @@ def user_headers(client: TestClient) -> dict[str, str]:
 
 
 def future_datetime(days: int = 3, hour: int = 10) -> datetime:
-    return (datetime.utcnow() + timedelta(days=days)).replace(
+    return (utc_now() + timedelta(days=days)).replace(
         hour=hour,
         minute=0,
         second=0,
